@@ -1,0 +1,10 @@
+.project
+.settings/
+.vscode/
+bin/
+**/*.swp
+
+.idea/
+node_modules/
+charts/marketsummary/charts/
+charts/marketsummary/Chart.lock
