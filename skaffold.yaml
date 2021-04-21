@@ -1,0 +1,33 @@
+apiVersion: skaffold/v2beta2
+kind: Config
+build:
+  artifacts:
+  - image: marketsummary
+    context: .
+deploy:
+  helm:
+    releases:
+      - name: marketsummary
+        wait: true
+        chartPath: ./charts/marketsummary
+        values:
+          image: marketsummary
+        setValueTemplates:
+          istioDomain: "{{.ISTIO_DOMAIN}}"
+          productName: "{{.PRODUCT_NAME}}"
+          nodeEnv: "{{.NODE_ENV}}"
+          database.hostname: "{{.DB_HOSTNAME}}"
+          database.databaseName: "{{.DB_DATABASE_NAME}}"
+        setValues:
+          hpa.enabled: false
+profiles:
+  - name: local
+    activation:
+      - kubeContext: docker-desktop
+    patches:
+      - op: add
+        path: /deploy/helm/releases/0/setValues/mongodb.enabled
+        value: true
+      - op: add
+        path: /deploy/helm/releases/0/setValueTemplates/mongodb.auth.database
+        value: "{{.DB_DATABASE_NAME}}"
